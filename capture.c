@@ -3,45 +3,34 @@
 #include <pthread.h>
 #include "capture.h"
 
-// Global variables to track capture status and thread
-pthread_t capture_thread;
-int capture_running = 0;
-pcap_t *handle; // pcap handle for packet capture
+#define MAX_PACKETS 10000
 
-// Packet handler to process each captured packet
-void packet_handler(u_char *args, const struct pcap_pkthdr *header, const u_char *packet) {
-    printf("Captured a packet of length: %d bytes\n", header->len);
-    // Add custom packet processing logic here (e.g., attack detection)
+// Shared buffer to hold captured packets
+struct pcap_pkthdr packet_buffer[MAX_PACKETS];
+u_char *packet_data[MAX_PACKETS];
+int packet_index = 0;
+pthread_mutex_t capture_mutex = PTHREAD_MUTEX_INITIALIZER;
+
+void packet_handler(u_char *user_data, const struct pcap_pkthdr *header, const u_char *packet) {
+    pthread_mutex_lock(&capture_mutex);  // Lock the mutex to ensure safe access to shared data
+    if (packet_index < MAX_PACKETS) {
+        packet_buffer[packet_index] = *header;
+        packet_data[packet_index] = (u_char *)packet;
+        packet_index++;
+    }
+    pthread_mutex_unlock(&capture_mutex);  // Unlock the mutex after updating the buffer
 }
 
-// Function to start packet capture in a separate thread
-void *start_packet_capture(void *arg) {
+void *start_packet_capture() {
     char errbuf[PCAP_ERRBUF_SIZE];
-
-    // Open the network device for live capture (change "any" to a specific interface if needed)
-    handle = pcap_open_live("any", BUFSIZ, 1, 1000, errbuf);
+    pcap_t *handle = pcap_open_live("any", BUFSIZ, 1, 1000, errbuf);
     if (handle == NULL) {
         fprintf(stderr, "Could not open device: %s\n", errbuf);
-        capture_running = 0;
         return NULL;
     }
 
-    printf("Starting packet capture...\n");
-    capture_running = 1;
-
-    // Start capturing packets and call packet_handler for each packet
+    printf("Capturing packets...\n");
     pcap_loop(handle, 0, packet_handler, NULL);
-
+    pcap_close(handle);
     return NULL;
 }
-
-// Function to stop packet capture
-void stop_packet_capture() {
-    if (capture_running) {
-        printf("Stopping packet capture...\n");
-        pcap_breakloop(handle);  // Stop the packet capture loop
-        pcap_close(handle);      // Close the pcap handle
-        capture_running = 0;
-    }
-}
-

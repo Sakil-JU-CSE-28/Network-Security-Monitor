@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <pthread.h>
 #include "capture.h"
+#include "ddos.h"
 
 void print_menu() {
     printf("NetSec Monitor - Main Menu\n");
@@ -11,8 +12,7 @@ void print_menu() {
     printf("4. Detect Unauthorized Access\n");
     printf("5. View Alerts\n");
     printf("6. Log Suspicious Packets\n");
-    printf("7. Stop Capture\n");
-    printf("8. Exit\n");
+    printf("7. Exit\n");
     printf("Enter your choice: ");
 }
 
@@ -28,10 +28,14 @@ int main() {
             case 1:
                 // Start packet capture in a separate thread
                 pthread_create(&capture_thread, NULL, start_packet_capture, NULL);
+                printf("Capturing finshed\n");
                 break;
             case 2:
                 // Detect DDoS attacks
-                //detect_ddos_attack();
+                // for testing this i use hping3
+                // using sudo hping3 -i u1000 -S -p 80 127.0.0.1
+                // command i send the packet and detect the attack
+                detect_ddos_attack();
                 break;
             case 3:
                 // Detect MITM attacks
@@ -50,10 +54,6 @@ int main() {
                 //log_suspicious_packets();
                 break;
             case 7:
-                // Stop capture thread
-                //pthread_cancel(capture_thread);
-                break;
-            case 8:
                 printf("Exiting the program.\n");
                 exit(0);
                 break;
