@@ -1,5 +1,13 @@
 # Network-Security-Monitor
 
+## How to run this project
+- clone this repository from your linux machine
+- Go to terminal
+- From terminal go to this directory
+- Write command 'make'
+- Run using 'sudo ./my_program'
+- After completing remove file using 'make clear'
+
 ## Project Documentation
 
 ### Features
@@ -15,3 +23,5 @@
 - **pthread**: For multithreading the capture and analysis tasks.
 - **C Programming Language**: For implementing core functionality.
 - **Command Line Interface (CLI)**: For interaction with the system.
+### Testing
+- **hping3**: For packet sending and testing ddos attack
