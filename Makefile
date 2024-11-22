@@ -3,7 +3,7 @@ CC = gcc
 CFLAGS = -Wall -lpthread -lpcap
 
 # Source files
-SOURCES = main.c capture.c ddos.c
+SOURCES = main.c capture.c ddos.c mitm.c
 
 # Object files (compiled source files)
 OBJECTS = $(SOURCES:.c=.o)

@@ -28,7 +28,8 @@ int main() {
             case 1:
                 // Start packet capture in a separate thread
                 pthread_create(&capture_thread, NULL, start_packet_capture, NULL);
-                printf("Capturing finshed\n");
+                pthread_join(capture_thread, NULL);  // Wait for the thread to complete
+                printf("Packet capture completed. Total packets captured: %d\n", packet_index);
                 break;
             case 2:
                 // Detect DDoS attacks
@@ -39,7 +40,7 @@ int main() {
                 break;
             case 3:
                 // Detect MITM attacks
-                //detect_mitm_attack();
+                detect_mitm();
                 break;
             case 4:
                 // Detect unauthorized access
