@@ -3,6 +3,9 @@
 #include <pthread.h>
 #include "capture.h"
 #include "ddos.h"
+#include "unauthorized.h"
+#include "alerts.h"
+#include "mitm.h"
 
 void print_menu() {
     printf("NetSec Monitor - Main Menu\n");
@@ -11,8 +14,7 @@ void print_menu() {
     printf("3. Detect MITM Attacks\n");
     printf("4. Detect Unauthorized Access\n");
     printf("5. View Alerts\n");
-    printf("6. Log Suspicious Packets\n");
-    printf("7. Exit\n");
+    printf("6. Exit\n");
     printf("Enter your choice: ");
 }
 
@@ -28,7 +30,8 @@ int main() {
             case 1:
                 // Start packet capture in a separate thread
                 pthread_create(&capture_thread, NULL, start_packet_capture, NULL);
-                pthread_join(capture_thread, NULL);  // Wait for the thread to complete
+                // Wait for the thread to complete
+                pthread_join(capture_thread, NULL);  
                 printf("Packet capture completed. Total packets captured: %d\n", packet_index);
                 break;
             case 2:
@@ -44,17 +47,13 @@ int main() {
                 break;
             case 4:
                 // Detect unauthorized access
-                //detect_unauthorized_access();
+                detect_unauthorized_access();
                 break;
             case 5:
                 // View real-time alerts
-                //view_alerts();
+                view_alerts();
                 break;
             case 6:
-                // Log suspicious packets
-                //log_suspicious_packets();
-                break;
-            case 7:
                 printf("Exiting the program.\n");
                 exit(0);
                 break;
